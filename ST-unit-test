@@ -14,6 +14,7 @@ from optparse import OptionParser
 from os import environ, mkdir, sep, times
 from os.path import exists, isdir
 from platform import node
+from astropy.io import fits
 from subprocess import CalledProcessError, STDOUT, check_call
 import sys
 
@@ -130,32 +131,34 @@ def diff_mass(files, outref):
 
 #------------------------------------------------------------------------------
 
-# Compare 2 FITS files using ftdiff. Return OK on success (ftdiff
-# returns 0), or the exit code from ftdiff if non-zero.
+# Compare 2 FITS files using astropy fitsdiff. Return TRUE on success
+# or FALSE otherwise.
 def ftdiff(f1, f2, **kwargs):
-    status = OK
-    cmd = "ftdiff chatter=0 %s %s" % (f1, f2)
+    exclude = []
+    reltol = 0.0
+    tolerance = 0.0
     for (kw, val) in kwargs.items():
         if val != "":
-            cmd += " " + "=".join([kw, val])
-        else:
-            cmd += " " + kw
-    try:
-        check_call(cmd, shell = True, stdout = sys.stdout, stderr = STDOUT)
-    except CalledProcessError, e:
-        status = e.returncode
-    return status
+            if kw == 'exclude':
+                exclude = [val]
+            if kw == 'tolerance':
+                tolerance = val
+            if kw == 'reltol':
+                reltol = val
+    fd = fits.FITSDiff(f1, f2, ignore_keywords=exclude, rtol = reltol, atol = tolerance)
+    return fd.identical 
 
-# Run ftdiff on a set of files, with reference versions in outref. If
-# one or more files fails the comparison, return FAIL. Otherwise,
-# return OK.
+# Run ftdiff on a set of files, with reference versions in outref. If                                                                                                             
+# one or more files fails the comparison, return FAIL. Otherwise,                                                                                                                 
+# return OK.                                                                                                                                                                       
 def ftdiff_mass(fitsFiles, outref):
     status = OK
-    for f in fitsFiles:
+    for f in fitsFiles: 
         f1 = f
         f2 = sep.join([outref, f])
         print "Using ftdiff to compare %s to %s ..." % (f1, f2),
-        s = ftdiff(f1, f2, **fitsFiles[f])
+        #s = ftdiff(f1, f2, **fitsFiles[f])
+        s = ftdiff(f1, f2)
         if s == OK:
             print "passed."
         else:
@@ -213,7 +216,7 @@ def compare_text_data_files(f1, f2, tolerance):
 
 def check_environment(options):
     status = OK
-    environmentVariableNames = [ "HEADAS", "CONDA_PREFIX" ]
+    environmentVariableNames = [ "CONDA_PREFIX" ]
     for ev in environmentVariableNames:
         print "Checking if environment variable %s is set ..." % ev,
         try:
@@ -233,7 +236,7 @@ def check_test_tip_output(options):
         "a1-copy.pha" : {} ,
         "aeff_DC1-copy.fits" : {} ,
         "created_image.fits" : {} ,
-        "created_table.fits" : {} ,
+        #"created_table.fits" : {} ,
         "ft1_kwtest.fits" : {} ,
         "IFileSvc_no_template.fits" : {} ,
         "IFileSvc_success.fits" : {} ,
@@ -415,7 +418,7 @@ def check_test_GRBtemplate_output(options):
 def check_test_catalogAccess_output(options):
     status = OK
     outref = sep.join([refdata_path, "catalogAccess", "outref"])
-    fitsFiles = { "test1out.fits" : {} }
+    fitsFiles = { "test1out.fits" : {} ,}
     if exists_mass(fitsFiles.keys()) != OK:
         status = FAIL
     if ftdiff_mass(fitsFiles, outref) != OK:
@@ -972,7 +975,10 @@ def check_import_pyfits(options):
     try:
         import pyfits
     except ImportError:
-        status = FAIL
+        try:
+            import astropy.io.fits
+        except ImportError:
+            status = FAIL
     return status
 
 def check_import_pywcs(options):
@@ -980,7 +986,10 @@ def check_import_pywcs(options):
     try:
         import pywcs
     except ImportError:
-        status = FAIL
+        try:
+            import astropy.wcs
+        except ImportError:
+            status = FAIL
     return status
 
 def check_import_Pmw(options):
@@ -1155,14 +1164,14 @@ def check_import_pyds9(options):
 unitTestsWithRoot = [
     { "cmd"  : check_environment,
       "name" : "Checking environment variables" },
-    { "cmd"  : "runPy",  # Test embed_python package
-      "name" : "runPy" },
+    { "cmd"  : "test_embed_python",  # Test embed_python package
+      "name" : "test_embed_python" },
     { "cmd"  : "test_env", # Test facilities package
       "name" : "test_env" },
     { "cmd"  : "test_time", # Test facilities package
       "name" : "test_time" },
-    { "cmd"  : "testUtil", # Test facilities package
-      "name" : "testUtil" },
+    { "cmd"  : "test_Util", # Test facilities package
+      "name" : "test_Util" },
     { "cmd"  : "test_tip", # Test tip package
       "name" : "test_tip" },
     { "cmd"  : check_test_tip_output, # Test tip package
@@ -1203,10 +1212,10 @@ unitTestsWithRoot = [
       "name" : "test_flux" },
     { "cmd"  : check_test_flux_output,  # Test flux package
       "name" : "test_flux: Check output" },
-    # { "cmd"  : "test_optimizers",  # Test optimizers package
-    #   "name" : "test_optimizers" },
-    # { "cmd"  : check_test_optimizers_output,  # Test optimizers package
-    #   "name" : "test_optimizers: Check output" },
+     { "cmd"  : "test_optimizers",  # Test optimizers package
+       "name" : "test_optimizers" },
+     { "cmd"  : check_test_optimizers_output,  # Test optimizers package
+       "name" : "test_optimizers: Check output" },
     { "cmd"  : "test_celestialSources",  # Test celestialSources package
       "name" : "test_celestialSources" },
     { "cmd"  : "test_eblAtten", # Test celestialSources/eblAtten package
@@ -1221,14 +1230,14 @@ unitTestsWithRoot = [
       "name" : "test_GRBobs: Check output" },
     { "cmd"  : "test_GRBtemplate", # Test celestialSources/GRBtemplate
       "name" : "test_GRBtemplate" },
-     { "cmd"  : check_test_GRBtemplate_output, # Test celestialSources/
+    { "cmd"  : check_test_GRBtemplate_output, # Test celestialSources/
       "name" : "test_GRBtemplate: Check output" }, # GRBtemplate
     { "cmd"  : "test_microQuasar",  # Test celestialSourcesmicroQuasar
       "name" : "test_microQuasar" },
     { "cmd"  : "test_catalogAccess", # Test catalogAccess package
       "name" : "test_catalogAccess" },
-    { "cmd"  : check_test_catalogAccess_output, # Test catalogAccess package
-      "name" : "test_catalogAccess: Check output" },
+    #{ "cmd"  : check_test_catalogAccess_output, # Test catalogAccess package
+    #  "name" : "test_catalogAccess: Check output" },
     { "cmd"  : "test_evtbin",  # Test evtbin package
       "name" : "test_evtbin" },
     { "cmd"  : check_test_evtbin_output,  # Test evtbin package
@@ -1265,8 +1274,8 @@ unitTestsWithRoot = [
       "name" : "test_pulsarDb" },
     { "cmd"  : check_test_pulsarDb_output,  # Test pulsarDb package
       "name" : "test_pulsarDb: Check output" },
-    { "cmd"  : "test_psearch",  # Test periodSearch package
-      "name" : "test_psearch" },
+    { "cmd"  : "test_periodSearch",  # Test periodSearch package
+      "name" : "test_periodSearch" },
     { "cmd"  : check_test_psearch_output,
       "name" : "test_psearch: Check output" },
     { "cmd"  : "test_pulsePhase",  # Test pulsePhase package
@@ -1311,8 +1320,8 @@ unitTestsWithRoot = [
       "name" : "test_import_pyLikelihood: Check for proper module import" },
     { "cmd"  : check_import_ROOT,
       "name" : "test_import_ROOT: Check for proper module import" },
-    { "cmd"  : check_import_RootPlot,
-      "name" : "test_import_RootPlot: Check for proper module import" },
+    #{ "cmd"  : check_import_RootPlot,
+    #  "name" : "test_import_RootPlot: Check for proper module import" },
     { "cmd"  : check_import_SummedLikelihood,
       "name" : "test_import_SummedLikelihood: Check for proper module import" },
     { "cmd"  : check_import_UnbinnedAnalysis,
