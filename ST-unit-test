@@ -1115,7 +1115,7 @@ def check_import_ROOT(options):
 def check_import_RootPlot(options):
     status = OK
     try:
-        import RootPlot
+        import rootplot
     except ImportError:
         status = FAIL
     return status
@@ -1147,7 +1147,7 @@ def check_import_gtburst(options):
 def check_import_pyds9(options):
 	status = OK
 	try:
-		import ds9
+		import pyds9
 	except ImportError:
 		status = FAIL
 	return status
