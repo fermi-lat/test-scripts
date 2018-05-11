@@ -11,7 +11,8 @@
 # Standard modules
 from optparse import OptionParser
 from os import environ, mkdir, sep, times
-from os.path import exists
+from os.path import exists, abspath, dirname
+from astropy.io import fits
 from platform import node
 from shutil import copyfile
 from subprocess import CalledProcessError, STDOUT, check_call
@@ -36,7 +37,7 @@ logFile = "ST-pulsar-test.log"
 refdata_path = sep.join([environ["CONDA_PREFIX"], "share", "fermitools", "data"])
 
 # Path to test script data.
-test_data_path = sep.join([refdata_path, "test-scripts"])
+test_data_path = sep.join([abspath(dirname(sys.argv[0])), "test-scripts"])
 
 # Path to test script output reference data.
 test_outref_path = sep.join([test_data_path, "outref"])
@@ -133,29 +134,31 @@ def diff_mass(files, outref):
 # Compare 2 FITS files using ftdiff. Return OK on success (ftdiff
 # returns 0), or the exit code from ftdiff if non-zero.
 def ftdiff(f1, f2, **kwargs):
-    status = OK
-    cmd = "ftdiff chatter=0 %s %s" % (f1, f2)
+    exclude = []
+    reltol = 0.0
+    tolerance = 0.0
     for (kw, val) in kwargs.items():
         if val != "":
-            cmd += " " + "=".join([kw, val])
-        else:
-            cmd += " " + kw
-    try:
-        check_call(cmd, shell = True, stdout = sys.stdout, stderr = STDOUT)
-    except CalledProcessError, e:
-        status = e.returncode
-    return status
+            if kw == 'exclude':
+                exclude = [val]
+            if kw == 'tolerance':
+                tolerance = val
+            if kw == 'reltol':
+                reltol = val
+    fd = fits.FITSDiff(f1, f2, ignore_keywords=exclude, rtol = reltol, atol = tolerance)
+    return fd.identical
 
 # Run ftdiff on a set of files, with reference versions in outref. If
 # one or more files fails the comparison, return FAIL. Otherwise,
 # return OK.
 def ftdiff_mass(fitsFiles, outref):
     status = OK
-    for f in fitsFiles:
+    for f in fitsFiles: 
         f1 = f
         f2 = sep.join([outref, f])
         print "Using ftdiff to compare %s to %s ..." % (f1, f2),
-        s = ftdiff(f1, f2, **fitsFiles[f])
+        #s = ftdiff(f1, f2, **fitsFiles[f])
+        s = ftdiff(f1, f2)
         if s == OK:
             print "passed."
         else:
