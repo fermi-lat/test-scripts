@@ -418,7 +418,7 @@ def check_test_GRBtemplate_output(options):
 def check_test_catalogAccess_output(options):
     status = OK
     outref = sep.join([refdata_path, "catalogAccess", "outref"])
-    fitsFiles = { "test1out.fits" : {} ,}
+    fitsFiles = { "test1out.fits" : [], }
     if exists_mass(fitsFiles.keys()) != OK:
         status = FAIL
     if ftdiff_mass(fitsFiles, outref) != OK:

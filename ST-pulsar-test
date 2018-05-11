@@ -33,7 +33,7 @@ import sys
 logFile = "ST-pulsar-test.log"
 
 # Path to reference data.
-refdata_path = sep.join([environ["FERMI_DIR"], "refdata", "fermi"])
+refdata_path = sep.join([environ["CONDA_PREFIX"], "share", "fermitools", "data"])
 
 # Path to test script data.
 test_data_path = sep.join([refdata_path, "test-scripts"])
