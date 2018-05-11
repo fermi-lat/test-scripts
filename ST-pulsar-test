@@ -37,7 +37,7 @@ logFile = "ST-pulsar-test.log"
 refdata_path = sep.join([environ["CONDA_PREFIX"], "share", "fermitools", "data"])
 
 # Path to test script data.
-test_data_path = sep.join([abspath(dirname(sys.argv[0])), "test-scripts"])
+test_data_path = sep.join([abspath(dirname(sys.argv[0])), "data"])
 
 # Path to test script output reference data.
 test_outref_path = sep.join([test_data_path, "outref"])
@@ -171,7 +171,7 @@ def ftdiff_mass(fitsFiles, outref):
 # Individual test functions
 def check_environment():
     status = OK
-    environmentVariableNames = [ "HEADAS", "FERMI_DIR" ]
+    environmentVariableNames = [ "CONDA_PREFIX" ]
     for ev in environmentVariableNames:
         print "Checking if environment variable %s is set ..." % ev,
         try:
@@ -217,7 +217,7 @@ def test_gtbary():
 
 def check_gtbary_output():
     status = OK
-    outref = sep.join([refdata_path, "test-scripts", "outref"])
+    outref = test_outref_path
     fitsFiles = {
         "gtbary-out.fits" : { "exclude" : "CREATOR,DATASUM",
                               "reltol" : "1e-15" },
@@ -263,7 +263,7 @@ def test_gtephem():
 
 def check_gtephem_output():
     status = OK
-    outref = sep.join([refdata_path, "test-scripts", "outref"])
+    outref = test_outref_path
     files = {
         "ST-gtephem.log" : [],
         }
@@ -302,7 +302,7 @@ def test_gtpulsardb():
 
 def check_gtpulsardb_output():
     status = OK
-    outref = sep.join([refdata_path, "test-scripts", "outref"])
+    outref = test_outref_path
 
     fitsFiles = {
         "gtpulsardb-out.fits" : { "exclude" : "CREATOR,DATASUM" },
@@ -376,7 +376,7 @@ def test_gtpphase():
 
 def check_gtpphase_output():
     status = OK
-    outref = sep.join([refdata_path, "test-scripts", "outref"])
+    outref = test_outref_path
 
     fitsFiles = {
         "gtpphase-out.fits" : { "exclude" : "DATASUM",
@@ -433,7 +433,7 @@ def test_gtophase():
 
 def check_gtophase_output():
     status = OK
-    outref = sep.join([refdata_path, "test-scripts", "outref"])
+    outref = test_outref_path
 
     fitsFiles = {
         "gtophase-out.fits" : { "exclude" : "DATASUM",
@@ -518,7 +518,7 @@ def test_gtpsearch():
 
 def check_gtpsearch_output():
     status = OK
-    outref = sep.join([refdata_path, "test-scripts", "outref"])
+    outref = test_outref_path
 
     fitsFiles = {
         "gtpsearch-out.fits" : { "exclude" : "CREATOR" },
@@ -592,7 +592,7 @@ def test_gtpspec():
 
 def check_gtpspec_output():
     status = OK
-    outref = sep.join([refdata_path, "test-scripts", "outref"])
+    outref = test_outref_path
 
     fitsFiles = {
         "gtpspec-out.fits" : { "exclude" : "CREATOR,DATASUM",
@@ -636,7 +636,7 @@ def test_gtptest():
 
 def check_gtptest_output():
     status = OK
-    outref = sep.join([refdata_path, "test-scripts", "outref"])
+    outref = test_outref_path
 
     fitsFiles = {
         "gtptest-out.fits" : { "exclude" : "CREATOR,DATASUM",
@@ -848,7 +848,7 @@ if __name__ == "__main__":
 
     # Prepend the syspfiles directory from the ScienceTools
     # installatiomn toi the PFILES path.
-    environ['PFILES'] = environ['FERMI_DIR'] + '/syspfiles' + ':' + \
+    environ['PFILES'] = environ['CONDA_PREFIX'] + '/share/fermitools/syspfiles' + ':' + \
                         environ['PFILES']
 
     # Fetch the test start time.
