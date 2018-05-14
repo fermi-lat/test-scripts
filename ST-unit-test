@@ -505,8 +505,8 @@ def check_test_Likelihood_output(options):
         "cntsMap.fits" : {},
         "countsMap.fits" : {},
         "dataMap.fits" : {},
-        "modelMap.fits" : { "reltol" : "1.4e-1" },
-        "srcMaps.fits" : { "reltol" : "1e-1" },
+        "modelMap.fits" : {},
+        "srcMaps.fits" : {},
         }
     if exists_mass(fitsFiles.keys()) != OK:
         status = FAIL
@@ -519,10 +519,7 @@ def check_test_Likelihood_output(options):
 def check_test_observationSim_output(options):
     status = OK
     outref = sep.join([refdata_path, "observationSim", "outref"])
-    fitsFiles = {
-        "test_events_0000.fits" : { "exclude": "DATASUM",
-                                    "reltol": "1e-15" },
-        }
+    fitsFiles = { "test_events_0000.fits" : {} } 
     if exists_mass(fitsFiles.keys()) != OK:
         status = FAIL
     if ftdiff_mass(fitsFiles, outref) != OK:
@@ -587,10 +584,8 @@ def check_test_timeSystem_output(options):
             "testTimeCorrectorApp_par6.ref") != OK:
         status = FAIL
     fitsFiles = {
-        "testTimeCorrectorApp_par1.fits" : { "exclude" : "CREATOR,DATASUM",
-                                             "reltol" : "1e-15" },
-        "testTimeCorrectorApp_par2.fits" : { "exclude" : "CREATOR,DATASUM",
-                                             "reltol" : "1e-15" },
+        "testTimeCorrectorApp_par1.fits" : {},
+        "testTimeCorrectorApp_par2.fits" : {},
         }
     if exists_mass(fitsFiles.keys()) != OK:
         status = FAIL
@@ -775,22 +770,18 @@ def check_test_psearch_output(options):
         "artificial-chi-sq.fits" : {},
         "artificial-fourier.fits" : {},
         "psrb0540-chi-sq.fits" : {},
-        "psrb0540-fourier.fits" : { "exclude" : "DATASUM",
-                                    "reltol" : "1e-15" },
+        "psrb0540-fourier.fits" : {},
         "psrb0540-h.fits" : {},
         "psrb0540-pdot-chi-sq.fits" : {},
-        "psrb0540-pdot-fourier.fits" : { "exclude" : "DATASUM",
-                                         "reltol" : "1e-15" },
+        "psrb0540-pdot-fourier.fits" : {},
         "psrb0540-pdot-h.fits" : {},
         "psrb0540-pdot-rayleigh.fits" : {},
         "psrb0540-pdot-z2n.fits" : {},
         "psrb0540-rayleigh.fits" : {},
         "psrb0540-z2n.fits" : {},
-        "testPeriodicityTestApp_par1.fits" : { "exclude" : "CREATOR,DATASUM",
-                                               "reltol" : "1e-15" },
-        "testPeriodSearchApp_par1.fits" : { "exclude" : "CREATOR" },
-        "testPowerSpectrumApp_par1.fits" : { "exclude" : "CREATOR,DATASUM",
-                                             "reltol" : "1e-15" },
+        "testPeriodicityTestApp_par1.fits" : {},
+        "testPeriodSearchApp_par1.fits" : {},
+        "testPowerSpectrumApp_par1.fits" : {},
         }
     if exists_mass(fitsFiles.keys()) != OK:
         status = FAIL
@@ -881,58 +872,39 @@ def check_test_pulsePhase_output(options):
             print "failed!"
             status = FAIL
     fitsFiles = {
-        "testOrbitalPhaseApp_par1a.fits" : { "exclude" : "DATASUM",
-                                             "reltol" : "1e-10" },
-        "testOrbitalPhaseApp_par1b.fits" : { "exclude" : "DATASUM",
-                                             "reltol" : "1e-11" },
-        "testOrbitalPhaseApp_par1c.fits" : { "exclude" : "DATASUM",
-                                             "reltol" : "1e-11" },
+        "testOrbitalPhaseApp_par1a.fits" : {},
+        "testOrbitalPhaseApp_par1b.fits" : {},
+        "testOrbitalPhaseApp_par1c.fits" : {},
         "testOrbitalPhaseApp_par2.fits" : {},
         "testOrbitalPhaseApp_par3.fits" : {},
         "testOrbitalPhaseApp_par4.fits" : {},
         "testOrbitalPhaseApp_par5.fits" : {},
         "testOrbitalPhaseApp_par6.fits" : {},
         "testOrbitalPhaseApp_par7.fits" : {},
-        "testOrbitalPhaseApp_par8.fits" : { "exclude" : "DATASUM",
-                                            "reltol" : "1e-10" },
-        "testOrbitalPhaseApp_par9.fits" : { "exclude" : "DATASUM",
-                                            "reltol" : "1e-10" },
+        "testOrbitalPhaseApp_par8.fits" : {},
+        "testOrbitalPhaseApp_par9.fits" : {},
         "testOrbitalPhaseApp_par10.fits" : {},
-        "testPulsePhaseApp_par1a.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-4" },
-        "testPulsePhaseApp_par1b.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-2" },
-        "testPulsePhaseApp_par1c.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-2" },
-        "testPulsePhaseApp_par2a.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-3" },
-        "testPulsePhaseApp_par2b.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-2" },
-        "testPulsePhaseApp_par2c.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-3" },
-        "testPulsePhaseApp_par3a.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-1" },
-        "testPulsePhaseApp_par3b.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-6" },
-        "testPulsePhaseApp_par3c.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-3" },
-        "testPulsePhaseApp_par4a.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-4" },
-        "testPulsePhaseApp_par4b.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-5" },
-        "testPulsePhaseApp_par4c.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-6" },
-        "testPulsePhaseApp_par4d.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-5" },
+        "testPulsePhaseApp_par1a.fits" : {},
+        "testPulsePhaseApp_par1b.fits" : {},
+        "testPulsePhaseApp_par1c.fits" : {},
+        "testPulsePhaseApp_par2a.fits" : {},
+        "testPulsePhaseApp_par2b.fits" : {},
+        "testPulsePhaseApp_par2c.fits" : {},
+        "testPulsePhaseApp_par3a.fits" : {},
+        "testPulsePhaseApp_par3b.fits" : {},
+        "testPulsePhaseApp_par3c.fits" : {},
+        "testPulsePhaseApp_par4a.fits" : {},
+        "testPulsePhaseApp_par4b.fits" : {},
+        "testPulsePhaseApp_par4c.fits" : {},
+        "testPulsePhaseApp_par4d.fits" : {},
         "testPulsePhaseApp_par5.fits" : {},
         "testPulsePhaseApp_par6.fits" : {},
         "testPulsePhaseApp_par7.fits" : {},
-        "testPulsePhaseApp_par8.fits" : { "exclude" : "DATASUM" },
-        "testPulsePhaseApp_par9.fits" : { "exclude" : "DATASUM" },
+        "testPulsePhaseApp_par8.fits" : {},
+        "testPulsePhaseApp_par9.fits" : {},
         "testPulsePhaseApp_par10.fits" : {},
         "testPulsePhaseApp_par11.fits" : {},
-        "testPulsePhaseApp_par12.fits" : { "exclude" : "DATASUM",
-                                           "reltol" : "1e-15"},
+        "testPulsePhaseApp_par12.fits" : {},
         "testPulsePhaseApp_par13.fits" : {},
     }
     if exists_mass(fitsFiles.keys()) != OK:
@@ -1203,10 +1175,10 @@ unitTestsWithRoot = [
       "name" : "test_flux" },
     { "cmd"  : check_test_flux_output,  # Test flux package
       "name" : "test_flux: Check output" },
-     { "cmd"  : "test_optimizers",  # Test optimizers package
-       "name" : "test_optimizers" },
-     { "cmd"  : check_test_optimizers_output,  # Test optimizers package
-       "name" : "test_optimizers: Check output" },
+    { "cmd"  : "test_optimizers",  # Test optimizers package
+      "name" : "test_optimizers" },
+    { "cmd"  : check_test_optimizers_output,  # Test optimizers package
+      "name" : "test_optimizers: Check output" },
     { "cmd"  : "test_celestialSources",  # Test celestialSources package
       "name" : "test_celestialSources" },
     { "cmd"  : "test_eblAtten", # Test celestialSources/eblAtten package
