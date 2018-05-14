@@ -426,14 +426,14 @@ def check_test_evtbin_output(options):
     outref = sep.join([refdata_path, "evtbin", "outref"])
     fitsFiles = {
         "CM2.fits"              : {},
-        "GBMLC1.lc"             : { "tolerance" : "1e-14" },
+        "GBMLC1.lc"             : {},
         "GBMPHA1.pha"           : {},
         "LC1.lc"                : {},
         "merged_spectrum.pha"   : {},
         "PHA1.pha"              : {},
         "PHA2.pha"              : {},
         "separate_spectrum.pha" : {},
-        "test.ccube"            : { "tolerance" : "1e-14" },
+        "test.ccube"            : {},
         }
     if exists_mass(fitsFiles.keys()) != OK:
         status = FAIL
