@@ -156,7 +156,6 @@ def ftdiff_mass(fitsFiles, outref):
         f2 = sep.join([outref, f])
         print "Using ftdiff to compare %s to %s ..." % (f1, f2),
         s = ftdiff(f1, f2, **fitsFiles[f])
-        #s = ftdiff(f1, f2)
         if s == OK:
             print "passed."
         else:
