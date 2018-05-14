@@ -322,10 +322,7 @@ def check_test_optimizers_output(options):
         status = FAIL
     if diff_mass(files, outref) != OK:
         status = FAIL
-    fitsFiles = {
-        "Mc.fits" : { "exclude": "DATASUM",
-                      "reltol": "1e-1" },
-        }
+    fitsFiles = { "Mc.fits" : {} }
     if exists_mass(fitsFiles.keys()) != OK:
         status = FAIL
     if ftdiff_mass(fitsFiles, outref) != OK:
@@ -430,8 +427,7 @@ def check_test_evtbin_output(options):
     outref = sep.join([refdata_path, "evtbin", "outref"])
     fitsFiles = {
         "CM2.fits"              : {},
-        "GBMLC1.lc"             : { "exclude" : "DATASUM",
-                                    "tolerance" : "1e-14" },
+        "GBMLC1.lc"             : { "tolerance" : "1e-14" },
         "GBMPHA1.pha"           : {},
         "LC1.lc"                : {},
         "merged_spectrum.pha"   : {},
