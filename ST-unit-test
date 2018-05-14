@@ -505,10 +505,8 @@ def check_test_Likelihood_output(options):
         "cntsMap.fits" : {},
         "countsMap.fits" : {},
         "dataMap.fits" : {},
-        "modelMap.fits" : { "exclude" : "DATASUM",
-                            "reltol" : "1.4e-1" },
-        "srcMaps.fits" : { "exclude" : "DATASUM",
-                            "reltol" : "1e-1" },
+        "modelMap.fits" : { "reltol" : "1.4e-1" },
+        "srcMaps.fits" : { "reltol" : "1e-1" },
         }
     if exists_mass(fitsFiles.keys()) != OK:
         status = FAIL
