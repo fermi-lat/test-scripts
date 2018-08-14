@@ -1291,8 +1291,8 @@ unitTestsWithRoot = [
       "name" : "test_import_UnbinnedAnalysis: Check for proper module import" },
     { "cmd"  : check_import_gtburst,
       "name" : "test_import_gtburst: Check for proper module import" },
-    { "cmd"	 : check_import_pyds9,
-      "name" : "test_import_pyds9: Check for proper module import" },
+    #{ "cmd"	 : check_import_pyds9,
+    #  "name" : "test_import_pyds9: Check for proper module import" },
 ]
 
 # List of unit tests to run when ROOT is not available. The "cmd"
