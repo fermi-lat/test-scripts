@@ -1237,10 +1237,10 @@ unitTestsWithRoot = [
       "name" : "test_pulsarDb" },
     { "cmd"  : check_test_pulsarDb_output,  # Test pulsarDb package
       "name" : "test_pulsarDb: Check output" },
-    { "cmd"  : "test_periodSearch",  # Test periodSearch package
-      "name" : "test_periodSearch" },
-    { "cmd"  : check_test_psearch_output,
-      "name" : "test_psearch: Check output" },
+#    { "cmd"  : "test_periodSearch",  # Test periodSearch package
+#      "name" : "test_periodSearch" },
+#    { "cmd"  : check_test_psearch_output,
+#      "name" : "test_psearch: Check output" },
     { "cmd"  : "test_pulsePhase",  # Test pulsePhase package
       "name" : "test_pulsePhase" },
     { "cmd"  : check_test_pulsePhase_output,
