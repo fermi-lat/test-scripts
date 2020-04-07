@@ -1503,13 +1503,13 @@ def run_test(cmd, options):
     global nTest
 
     # Open the test log to append the results from this test.
-    f = open(logFile, "a", 0) # 0 means unbuffered
+    f = open(logFile, "a")
     f.write("*" * 80 + "\n")
 
     # Open a temporary file to act as a pseudobuffer to hold
     # the stdout stream so that it can be redirected to two
     # locations
-    tmp = open("tmpFile", "w+", 0) # Open unbuffered
+    tmp = open("tmpFile", "w+") 
     
  
     # Initialize the status to 0 (success).
