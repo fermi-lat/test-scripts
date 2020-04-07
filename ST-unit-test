@@ -11,15 +11,16 @@
 # Standard modules
 from glob import glob
 from optparse import OptionParser
-from os import environ, mkdir, sep, times
+from os import environ, mkdir, sep, times, remove
 from os.path import exists, isdir
 from platform import node
 from astropy.io import fits
 from subprocess import CalledProcessError, STDOUT, check_call
+import timeit
 import sys
 
 # Third-party modules
-
+from junit_xml import TestSuite, TestCase
 # Project modules
 
 #******************************************************************************
@@ -1043,13 +1044,13 @@ def check_import_LikelihoodState(options):
         status = FAIL
     return status
 
-def check_import_PSFMath(options):
-    status = OK
-    try:
-        import PSFMath
-    except ImportError:
-        status = FAIL
-    return status
+#def check_import_PSFMath(options):
+#    status = OK
+#    try:
+#        import PSFMath
+#    except ImportError:
+#        status = FAIL
+#    return status
 
 def check_import_pyIrfLoader(options):
     status = OK
@@ -1107,13 +1108,13 @@ def check_import_gtburst(options):
         status = FAIL
     return status
     
-def check_import_pyds9(options):
-	status = OK
-	try:
-		import pyds9
-	except ImportError:
-		status = FAIL
-	return status
+#def check_import_pyds9(options):
+#	status = OK
+#	try:
+#		import pyds9
+#	except ImportError:
+#		status = FAIL
+#	return status
 
 #------------------------------------------------------------------------------
 
@@ -1275,8 +1276,8 @@ unitTestsWithRoot = [
       "name" : "test_import_FluxDensity: Check for proper module import" },
     { "cmd"  : check_import_LikelihoodState,
       "name" : "test_import_LikelihoodState: Check for proper module import" },
-    { "cmd"  : check_import_PSFMath,
-      "name" : "test_import_PSFMath: Check for proper module import" },
+#    { "cmd"  : check_import_PSFMath,
+#      "name" : "test_import_PSFMath: Check for proper module import" },
     { "cmd"  : check_import_pyIrfLoader,
       "name" : "test_import_pyIrfLoader: Check for proper module import" },
     { "cmd"  : check_import_pyLikelihood,
@@ -1435,8 +1436,8 @@ unitTestsWithoutRoot = [
       "name" : "test_import_FluxDensity: Check for proper module import" },
     { "cmd"  : check_import_LikelihoodState,
       "name" : "test_import_LikelihoodState: Check for proper module import" },
-    { "cmd"  : check_import_PSFMath,
-      "name" : "test_import_PSFMath: Check for proper module import" },
+#    { "cmd"  : check_import_PSFMath,
+#      "name" : "test_import_PSFMath: Check for proper module import" },
     { "cmd"  : check_import_pyIrfLoader,
       "name" : "test_import_pyIrfLoader: Check for proper module import" },
     { "cmd"  : check_import_pyLikelihood,
@@ -1447,8 +1448,8 @@ unitTestsWithoutRoot = [
       "name" : "test_import_UnbinnedAnalysis: Check for proper module import" },
     { "cmd"  : check_import_gtburst,
       "name" : "test_import_gtburst: Check for proper module import" },
-    { "cmd"	 : check_import_pyds9,
-      "name" : "test_import_pyds9: Check for proper module import" },
+#    { "cmd"	 : check_import_pyds9,
+#      "name" : "test_import_pyds9: Check for proper module import" },
     ]
 
 #******************************************************************************
@@ -1502,35 +1503,58 @@ def run_test(cmd, options):
     global nTest
 
     # Open the test log to append the results from this test.
-    f = open(logFile, "a")
+    f = open(logFile, "a", 0) # 0 means unbuffered
     f.write("*" * 80 + "\n")
 
+    # Open a temporary file to act as a pseudobuffer to hold
+    # the stdout stream so that it can be redirected to two
+    # locations
+    tmp = open("tmpFile", "w+", 0) # Open unbuffered
+    
+ 
     # Initialize the status to 0 (success).
     status = OK
 
+    results = [status]
     # If the test command is a string, it represents a shell
     # command. Otherwise, it is the name of a function to call.
     if type(cmd) == str:
         f.write("Test %d: shell command '%s'\n" % (nTest, cmd))
         try:
-            check_call(cmd, shell = True, stdout = f, stderr = STDOUT)
+            check_call(cmd, shell = True, stdout = tmp, stderr = STDOUT)
         except CalledProcessError as e:
             status = e.returncode
     else:
         f.write("Test %d: function %s()\n" % (nTest, cmd.__name__))
         stdout_orig = sys.stdout # Should be console
         stderr_orig = sys.stderr # Should be console
-        sys.stdout = f           # Send stdout to file
-        sys.stderr = f           # Send stderr to file
+        sys.stdout = tmp           # Send stdout to file
+        sys.stderr = tmp           # Send stderr to file
         status = cmd(options)
         sys.stdout = stdout_orig # Back to console
         sys.stderr = stderr_orig # Back to console
 
-    # Close the test log.
-    f.close()
+    # Make sure stdout/stderr are returned
+    #results = [status,sys.stdout,sys.stderr]
 
+    # Close and reopen tmp to make sure that the stream is fully
+    # written out
+    tmp.close()
+    tmp = open("tmpFile", "r")
+
+    testoutput = tmp.read()
+    
+    f.write(testoutput)
+    
+    results[0] = status
+    results.append(testoutput)
+    
+    # Close the test log and tmp file.
+    f.close()
+    tmp.close()
+    
     # Return the test status.
-    return status
+    return results
 
 #******************************************************************************
 
@@ -1549,6 +1573,8 @@ def ok(testCmd, testName, options):
     else:
         print ("not ok %s - %s" % (nTest, testName))
         nFail += 1
+        status[0] = FAIL
+    return status
 
 #******************************************************************************
 
@@ -1572,14 +1598,29 @@ if __name__ == "__main__":
     tStart = times()[4]
     if options.debug: print ("tStart = %s" % tStart)
 
+    test_cases = []
     # Run each unit test.
     if options.without_root:
         for unitTest in unitTestsWithoutRoot:
             ok(unitTest["cmd"], unitTest["name"], options)
     else:
         for unitTest in unitTestsWithRoot:
-            ok(unitTest["cmd"], unitTest["name"], options)
+            testStart = times()[4]
+            result = ok(unitTest["cmd"], unitTest["name"], options)
+            testEnd = times()[4]
 
+            tc = TestCase(unitTest["name"],unitTest["cmd"],testEnd-testStart,result[1])
+            
+            if result[0] != OK:
+                tc.add_failure_info("### Test Failure! ###\n Log Dump:\n"+result[1])
+
+            test_cases.append(tc)
+    
+    ts = TestSuite("ST-unit-test-output", test_cases)
+    
+    with open('ST-unit-test-Output.xml', 'w') as f:
+            TestSuite.to_file(f, [ts], prettyprint=True)
+    
     # Fetch the test stop time.
     tStop = times()[4]
     if options.debug: print ("tStop = %s" % tStop)
@@ -1598,3 +1639,6 @@ if __name__ == "__main__":
     if nFail > 0:
         print ("# Looks like you failed %d %s of %d" % \
               (nFail, "test" if nFail == 1 else "tests", nTest))
+
+    # Remove tmpFile
+    remove("tmpFile")
