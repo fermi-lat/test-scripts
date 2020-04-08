@@ -1567,7 +1567,7 @@ def ok(testCmd, testName, options):
     global nFail
     nTest += 1
     status = run_test(testCmd, options)
-    if status == OK:
+    if status[0] == OK:
         print ("ok %s - %s" % (nTest, testName))
         nPass += 1
     else:
