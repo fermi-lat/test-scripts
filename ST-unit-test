@@ -1127,7 +1127,7 @@ def check_import_gtburst(options):
 
 unitTestsWithRoot = [
     { "cmd"  : check_environment,
-      "name" : "Checking environment variables" },
+      "name" : "Checking environment variables as Root" },
     { "cmd"  : "test_embed_python",  # Test embed_python package
       "name" : "test_embed_python" },
     { "cmd"  : "test_env", # Test facilities package
@@ -1188,14 +1188,16 @@ unitTestsWithRoot = [
       "name" : "test_genericSources" },
     { "cmd"  : check_test_genericSources_output, # Test celestialSources/
       "name" : "test_genericSources: Check output" }, # genericSources
-    { "cmd"  : "test_GRBobs", # Test celestialSources/GRBobs
-      "name" : "test_GRBobs" },
-    { "cmd"  : check_test_GRBobs_output, # Test celestialSources/GRBobs
-      "name" : "test_GRBobs: Check output" },
-    { "cmd"  : "test_GRBtemplate", # Test celestialSources/GRBtemplate
-      "name" : "test_GRBtemplate" },
-    { "cmd"  : check_test_GRBtemplate_output, # Test celestialSources/
-      "name" : "test_GRBtemplate: Check output" }, # GRBtemplate
+    # Remove GRBobs from tests 07/25 JSA
+    # # Only celestialSources binaries created: eblAtten , microQuasar
+    # { "cmd"  : "test_GRBobs", # Test celestialSources/GRBobs
+    #   "name" : "test_GRBobs" },
+    # { "cmd"  : check_test_GRBobs_output, # Test celestialSources/GRBobs
+    #   "name" : "test_GRBobs: Check output" },
+    # { "cmd"  : "test_GRBtemplate", # Test celestialSources/GRBtemplate
+    #   "name" : "test_GRBtemplate" },
+    # { "cmd"  : check_test_GRBtemplate_output, # Test celestialSources/
+    #   "name" : "test_GRBtemplate: Check output" }, # GRBtemplate
     { "cmd"  : "test_microQuasar",  # Test celestialSourcesmicroQuasar
       "name" : "test_microQuasar" },
     { "cmd"  : "test_catalogAccess", # Test catalogAccess package
@@ -1305,15 +1307,17 @@ unitTestsWithRoot = [
 
 unitTestsWithoutRoot = [
     { "cmd"  : check_environment,
-      "name" : "Checking environment variables" },
-    { "cmd"  : "runPy",  # Test embed_python package
-      "name" : "runPy" },
+      "name" : "Checking environment variables as WithoutRoot" },
+    # Updated to run test_embed_python (like Root), not runPy.  JSA 07/25
+    { "cmd"  : "test_embed_python",  # Test embed_python package
+      "name" : "test_embed_python" },
     { "cmd"  : "test_env", # Test facilities package
       "name" : "test_env" },
     { "cmd"  : "test_time", # Test facilities package
       "name" : "test_time" },
-    { "cmd"  : "testUtil", # Test facilities package
-      "name" : "testUtil" },
+    # Updated to run test_Util (like Root), not testUtil.  JSA 07/25
+    { "cmd"  : "test_Util", # Test facilities package
+      "name" : "test_Util" },
     { "cmd"  : "test_tip", # Test tip package
       "name" : "test_tip" },
     { "cmd"  : check_test_tip_output, # Test tip package
@@ -1400,10 +1404,12 @@ unitTestsWithoutRoot = [
       "name" : "test_pulsarDb" },
     { "cmd"  : check_test_pulsarDb_output,  # Test pulsarDb package
       "name" : "test_pulsarDb: Check output" },
-    { "cmd"  : "test_psearch",  # Test periodSearch package
-      "name" : "test_psearch" },
-    { "cmd"  : check_test_psearch_output,
-      "name" : "test_psearch: Check output" },
+# Removing since no periodSearch was found.  JSA 07/25 
+# Was already commented out in Root version
+#    { "cmd"  : "test_psearch",  # Test periodSearch package
+#      "name" : "test_psearch" },
+#    { "cmd"  : check_test_psearch_output,
+#      "name" : "test_psearch: Check output" },
     { "cmd"  : "test_pulsePhase",  # Test pulsePhase package
       "name" : "test_pulsePhase" },
     { "cmd"  : check_test_pulsePhase_output,
@@ -1474,9 +1480,9 @@ def getCommandLineOptions():
     optionParser.add_option("-w", "--warn", action = "store_true",
                             default = False,
                             help = "print warning messages as needed")
-    optionParser.add_option("", "--without-root", action = "store_true",
+    optionParser.add_option("", "--with-root", action = "store_true",
                             default = False,
-                            help = "skip ROOT-dependent tests")
+                            help = "run ROOT-dependent tests")
 
     # Parse the command-line options.
     (options, args) = optionParser.parse_args()
@@ -1600,22 +1606,23 @@ if __name__ == "__main__":
 
     test_cases = []
     # Run each unit test.
-    if options.without_root:
-        for unitTest in unitTestsWithoutRoot:
+    # Default will now run WithoutRoot tests. JSA 07/2025
+    if options.with_root:
+        for unitTest in unitTestsWithRoot:
             ok(unitTest["cmd"], unitTest["name"], options)
     else:
-        for unitTest in unitTestsWithRoot:
+        for unitTest in unitTestsWithoutRoot:
             testStart = times()[4]
             result = ok(unitTest["cmd"], unitTest["name"], options)
             testEnd = times()[4]
-
+    
             tc = TestCase(unitTest["name"],unitTest["cmd"],testEnd-testStart,result[1])
             
             if result[0] != OK:
                 tc.add_failure_info("### Test Failure! ###\n Log Dump:\n"+result[1])
 
-            test_cases.append(tc)
-    
+            test_cases.append(tc) 
+
     ts = TestSuite("ST-unit-test-output", test_cases)
     
     with open('ST-unit-test-Output.xml', 'w') as f:
