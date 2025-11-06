@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/envA python
 
 # $Id: ST-AGN-thread-test,v 1.13.6.6 2017/02/01 04:27:44 jasercio Exp $
 
@@ -186,13 +186,13 @@ def check_environment():
 
 def test_gtselect():
     status = OK
-    infile = sep.join([test_data_path, "3C84-P7REP-FT1.fits"])
-    outfile = "3C84-photons.fits"
-    ra = "49.9507"
-    dec = "41.5117"
-    rad = "10"
-    tmin = "268185604"
-    tmax = "268617603"
+    infile = sep.join([test_data_path, "L25110610395696BB9F6356_PH00.fits"])
+    outfile = "3C279-photons.fits"
+    ra = "194.042"
+    dec = "-5.789"
+    rad = "10" 
+    tmin = "538032601" # Major Flare 19 Jan 2018 JD: 2458137.9999537035, MET: 538056001, flux 1.366e-5 
+    tmax = "538079602" # Total integration time: 6.5 hours (two orbits), centered on peak flare
     emin = "100"
     emax = "100000"
     zmax = "90"
@@ -239,7 +239,7 @@ def check_gtselect_output():
 def test_gtbin():
     status = OK
     evfile = "3C84-photons.fits"
-    scfile = sep.join([test_data_path, "3C84-FT2.fits"])
+    scfile = sep.join([test_data_path, "L25110610395696BB9F6356_SC00.fits"])
     outfile = "3C84-cmap.fits"
     algorithm = "CMAP"
     ebinalg = "LOG"
@@ -248,12 +248,12 @@ def test_gtbin():
     enumbins = "20"
     denergy = "0"
     ebinfile = "NONE"
-    nxpix = "300"
-    nypix = "300"
+    nxpix = "200"
+    nypix = "200"
     binsz = "0.1"
     coordsys = "CEL"
-    xref = "49.9507"
-    yref = "41.5117"
+    xref = "194.042"
+    yref = "-5.789"
     axisrot = "0"
     rafield = "RA"
     decfield = "DEC"
@@ -301,16 +301,16 @@ def check_gtbin_output():
 
 def test_gtltcube():
     status = OK
-    evfile = "3C84-photons.fits"
+    evfile = "3C279-photons.fits"
     evtable = "EVENTS"
-    scfile = sep.join([test_data_path, "3C84-FT2.fits"])
+    scfile = sep.join([test_data_path, "L25110610395696BB9F6356_SC00.fits"])
     sctable = "SC_DATA"
-    outfile = "3C84-expcube.fits"
+    outfile = "3C279-expcube.fits"
     dcostheta = "0.099"
     binsz = "1"
     phibins = "0"
-    tmin = "268185604"
-    tmax = "268617603"
+    tmin = "538032601"
+    tmax = "538079602"
     file_version = "1"
     zmax = "90"
     chatter = "0"
@@ -348,14 +348,14 @@ def check_gtltcube_output():
 
 def test_gtexpmap():
     status = OK
-    evfile = "3C84-photons.fits"
+    evfile = "3C279-photons.fits"
     evtable = "EVENTS"
-    scfile = sep.join([test_data_path, "3C84-FT2.fits"])
+    scfile = sep.join([test_data_path, "L25110610395696BB9F6356_SC00.fits"])
     sctable = "SC_DATA"
-    expcube = "3C84-expcube.fits"
-    outfile = "3C84-expmap.fits"
-    irfs = "P7REP_SOURCE_V15"
-    srcrad = "20"
+    expcube = "3C279-expcube.fits"
+    outfile = "3C279-expmap.fits"
+    irfs = "P7REP_SOURCE_V15" # Check IRF
+    srcrad = "10"
     nlong = "80"
     nlat = "80"
     nenergies = "20"
@@ -401,13 +401,13 @@ def check_gtexpmap_output():
 
 def test_gtlike():
     status = OK
-    irfs = "P7REP_SOURCE_V15"
-    expcube = "3C84-expcube.fits"
-    srcmdl = sep.join([test_data_path, "3C84-model.xml"])
+    irfs = "P7REP_SOURCE_V15" # Check IRF
+    expcube = "3C279-expcube.fits"
+    srcmdl = sep.join([test_data_path, "3C279-model.xml"]) # Need to generate source model for 3C279
     sfile = "none"
     check_fit = "yes"
-    results = "3C84-results.dat"
-    specfile = "3C84-counts_spectra.fits"
+    results = "3C279-results.dat"
+    specfile = "3C279-counts_spectra.fits"
     statistic = "UNBINNED"
     optimizer = "DRMNFB"
     ftol = "1e-2"
@@ -415,11 +415,11 @@ def test_gtlike():
     tsmin = "no"
     save = "yes"
     refit = "no"
-    evfile = "3C84-photons.fits"
+    evfile = "3C279-photons.fits"
     evtable = "EVENTS"
-    scfile = sep.join([test_data_path, "3C84-FT2.fits"])
+    scfile = sep.join([test_data_path, "L25110610395696BB9F6356_SC00.fits"])
     sctable = "SC_DATA"
-    expmap = "3C84-expmap.fits"
+    expmap = "3C279-expmap.fits"
     plot = "no"
     cmap = "NONE"
     bexpmap = "NONE"
